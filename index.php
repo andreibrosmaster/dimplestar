@@ -141,10 +141,36 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
         
-        /* Navigation active state */
+ /* Navigation styles */
+        .nav-link {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::before {
+            width: 100%;
+        }
+        
         .nav-active {
-            background: linear-gradient(135deg, #f97316, #ea580c);
-            color: white;
+            color: #1e40af;
+            font-weight: 600;
+            background: rgba(30, 64, 175, 0.05);
+        }
+        
+        .nav-active::before {
+            width: 100%;
+            background: linear-gradient(90deg, #1e40af, #f97316);
         }
         
         /* Mobile menu animation */
@@ -195,14 +221,21 @@
                     </a>
                 </div>
                 
-                <!-- Desktop Navigation -->
-                <nav class="hidden lg:flex items-center space-x-1">
-                    <a href="index.php" class="nav-active px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">Home</a>
-                    <a href="about.php" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-all duration-300">About Us</a>
-                    <a href="terminal.php" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-all duration-300">Terminals</a>
-                    <a href="routeschedule.php" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-all duration-300">Routes & Schedules</a>
-                    <a href="contact.php" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-all duration-300">Contact</a>
-                    <a href="book.php" class="ml-4 bg-gradient-to-r from-transport-orange to-orange-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-300">Book Now</a>
+               <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center space-x-2">
+                    <a href="index.php" class="nav-link nav-active px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300">Home</a>
+                    <a href="about.php" class="nav-link px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:text-transport-blue hover:bg-blue-50 transition-all duration-300">About Us</a>
+                    <a href="terminal.php" class="nav-link px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:text-transport-blue hover:bg-blue-50 transition-all duration-300">Terminals</a>
+                    <a href="routeschedule.php" class="nav-link px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:text-transport-blue hover:bg-blue-50 transition-all duration-300">Routes & Schedules</a>
+                    <a href="contact.php" class="nav-link px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:text-transport-blue hover:bg-blue-50 transition-all duration-300">Contact</a>
+                    <div class="ml-6 pl-6 border-l border-gray-200">
+                        <a href="book.php" class="bg-gradient-to-r from-transport-orange to-orange-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-orange-200 transform hover:scale-105 transition-all duration-300 flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4h4m4 0V9a2 2 0 00-2-2h-2m-4 0H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2z"></path>
+                            </svg>
+                            <span>Book Now</span>
+                        </a>
+                    </div>
                 </nav>
                 
                 <!-- User Account & Mobile Menu Button -->
@@ -224,18 +257,22 @@
                 </div>
             </div>
             
-            <!-- Mobile Navigation -->
+     <!-- Mobile Navigation -->
             <div id="mobileMenu" class="mobile-menu lg:hidden border-t border-gray-200">
                 <div class="py-4 space-y-2">
-                    <a href="index.php" class="block px-4 py-3 text-sm font-medium bg-transport-orange text-white rounded-lg">Home</a>
-                    <a href="about.php" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">About Us</a>
-                    <a href="terminal.php" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">Terminals</a>
-                    <a href="routeschedule.php" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">Routes & Schedules</a>
-                    <a href="contact.php" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">Contact</a>
-                    <a href="book.php" class="block px-4 py-3 text-sm font-medium bg-transport-blue text-white rounded-lg text-center">Book Now</a>
+                    <a href="index.php" class="block px-4 py-3 text-sm font-semibold bg-blue-50 text-transport-blue border-l-4 border-transport-blue rounded-r-lg">Home</a>
+                    <a href="about.php" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-transport-blue hover:border-l-4 hover:border-transport-blue hover:rounded-r-lg transition-all duration-300">About Us</a>
+                    <a href="terminal.php" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-transport-blue hover:border-l-4 hover:border-transport-blue hover:rounded-r-lg transition-all duration-300">Terminals</a>
+                    <a href="routeschedule.php" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-transport-blue hover:border-l-4 hover:border-transport-blue hover:rounded-r-lg transition-all duration-300">Routes & Schedules</a>
+                    <a href="contact.php" class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-transport-blue hover:border-l-4 hover:border-transport-blue hover:rounded-r-lg transition-all duration-300">Contact</a>
+                    <div class="pt-4 mt-4 border-t border-gray-200">
+                        <a href="book.php" class="block mx-4 px-6 py-4 text-sm font-semibold bg-gradient-to-r from-transport-orange to-orange-600 text-white rounded-xl text-center shadow-md hover:shadow-lg transition-all duration-300">
+                            📋 Book Your Trip Now
+                        </a>
+                    </div>
                     <div class="pt-2 border-t border-gray-200 sm:hidden">
                         <div class="px-4 py-2 text-sm text-gray-600">Welcome, Guest!</div>
-                        <a href="signlog.php" class="block px-4 py-2 text-sm text-transport-blue">Sign Up / Login</a>
+                        <a href="signlog.php" class="block px-4 py-2 text-sm text-transport-blue hover:text-transport-orange transition-colors">Sign Up / Login</a>
                     </div>
                 </div>
             </div>
