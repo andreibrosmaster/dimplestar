@@ -32,38 +32,8 @@
             }
         }
         
-        @keyframes slideIn {
-            from {
-                transform: translateX(-100%);
-            }
-            to {
-                transform: translateX(0);
-            }
-        }
-        
         .animate-fadeInUp {
             animation: fadeInUp 0.6s ease-out forwards;
-        }
-        
-        .animate-slideIn {
-            animation: slideIn 0.8s ease-out forwards;
-        }
-        
-        /* Glassmorphism effect */
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Hover effects */
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
         
         /* Navigation styles */
@@ -126,6 +96,13 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+        
+        /* Glassmorphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
@@ -168,8 +145,16 @@
                     <!-- User Account -->
                     <div class="hidden sm:block">
                         <div id="userAccount" class="text-right">
-                            <div class="text-sm text-gray-600">Welcome, Guest!</div>
-                            <a href="signlog.php" class="text-sm text-transport-blue hover:text-transport-orange transition-colors">Sign Up / Login</a>
+                            <?php
+                            if(isset($_SESSION['email'])) {
+                                $email = $_SESSION['email'];
+                                echo "<div class='text-sm text-gray-600'>Welcome, $email!</div>";
+                                echo "<a href='logout.php' class='text-sm text-red-600 hover:text-red-800 transition-colors'>Logout</a>";
+                            } else {
+                                echo "<div class='text-sm text-gray-600'>Welcome, Guest!</div>";
+                                echo "<a href='signlog.php' class='text-sm text-transport-blue hover:text-transport-orange transition-colors'>Sign Up / Login</a>";
+                            }
+                            ?>
                         </div>
                     </div>
                     
@@ -196,8 +181,16 @@
                         </a>
                     </div>
                     <div class="pt-2 border-t border-gray-200 sm:hidden">
-                        <div class="px-4 py-2 text-sm text-gray-600">Welcome, Guest!</div>
-                        <a href="signlog.php" class="block px-4 py-2 text-sm text-transport-blue hover:text-transport-orange transition-colors">Sign Up / Login</a>
+                        <?php
+                        if(isset($_SESSION['email'])) {
+                            $email = $_SESSION['email'];
+                            echo "<div class='px-4 py-2 text-sm text-gray-600'>Welcome, $email!</div>";
+                            echo "<a href='logout.php' class='block px-4 py-2 text-sm text-red-600 hover:text-red-800 transition-colors'>Logout</a>";
+                        } else {
+                            echo "<div class='px-4 py-2 text-sm text-gray-600'>Welcome, Guest!</div>";
+                            echo "<a href='signlog.php' class='block px-4 py-2 text-sm text-transport-blue hover:text-transport-orange transition-colors'>Sign Up / Login</a>";
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -206,57 +199,61 @@
 
     <!-- Main Content -->
     <main class="min-h-screen">
-        <!-- About Us Section -->
-        <section class="py-20 bg-gradient-to-br from-transport-blue via-blue-600 to-transport-orange">
+        <section class="py-20 bg-gradient-to-r from-gray-50 to-blue-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12 animate-fadeInUp">
-                    <h2 class="text-4xl md:text-6xl font-bold text-white mb-6">
-                        About <span class="text-yellow-300">Dimple Star Transport</span>
-                    </h2>
-                    <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-                        Discover our journey, mission, and vision as your trusted travel partner across the Philippines.
+                <div class="text-center mb-16 animate-fadeInUp">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">About Dimple Star Transport</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                        Learn about our history, mission, and vision as we connect communities across Metro Manila and Mindoro Province.
                     </p>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-12 items-center animate-slideIn">
-                    <div>
-                        <img src="images/oldbus.jpg" alt="Napat Transit Bus" class="rounded-xl shadow-xl w-full" style="max-width: 470px;">
-                    </div>
-                    <div class="bg-white p-8 rounded-xl shadow-xl card-hover">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Our History</h3>
-                        <p class="text-gray-600 mb-4">
-                            Photo taken on October 16, 1993. Napat Transit (now Dimple Star Transport) NVR-963 (fleet No 800) going to Alabang and jeepneys under the Light Rail Line in Taft Ave near United Nations Avenue, Ermita, Manila, Philippines.
-                        </p>
-                        <p class="text-gray-600">
-                            In May 2004, Napat Transit transformed into Dimple Star Transport, marking a new era of innovation and service excellence in the bus transport industry.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
+                <!-- Content Section -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <!-- Image and Facebook Like -->
+                        <div class="space-y-6">
+                            <img src="images/oldbus.jpg" alt="Napat Transit Bus 1993" class="w-full rounded-lg shadow-md" style="max-width: 470px;">
+                            <div class="text-center">
+                                <?php include_once("php_includes/fblike.php"); ?>
+                            </div>
+                        </div>
 
-        <!-- Mission & Vision Section -->
-        <section class="py-20 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="text-center card-hover bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl">
-                        <div class="w-16 h-16 bg-transport-blue text-white rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
+                        <!-- History, Mission, Vision -->
+                        <div class="space-y-8">
+                            <!-- Date and Time -->
+                            <div class="text-right">
+                                <div class="text-lg font-semibold text-gray-900">
+                                    <?php include_once("php_includes/date_time.php"); ?>
+                                </div>
+                                <p class="text-gray-600 text-sm">Current Date & Time</p>
+                            </div>
+
+                            <!-- History -->
+                            <div>
+                                <h3 class="text-2xl font-bold text-transport-blue mb-4">Our History</h3>
+                                <p class="text-gray-600 leading-relaxed">
+                                    On October 16, 1993, a photo captured Napat Transit (now Dimple Star Transport) NVR-963 (Fleet No. 800) heading to Alabang, alongside jeepneys under the Light Rail Line in Taft Ave near United Nations Avenue, Ermita, Manila, Philippines.<br><br>
+                                    In May 2004, Napat Transit transformed into Dimple Star Transport, marking a new era of service and innovation.
+                                </p>
+                            </div>
+
+                            <!-- Mission and Vision -->
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg shadow-md">
+                                    <h3 class="text-xl font-bold text-transport-blue mb-3">Mission</h3>
+                                    <p class="text-gray-600">
+                                        To provide superior transport service to Metro Manila and Mindoro Province commuters.
+                                    </p>
+                                </div>
+                                <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-lg shadow-md">
+                                    <h3 class="text-xl font-bold text-transport-orange mb-3">Vision</h3>
+                                    <p class="text-gray-600">
+                                        To lead the bus transport industry through innovative service to the riding public.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Mission</h3>
-                        <p class="text-gray-600">To provide superior transport service to Metro Manila and Mindoro Province commuters.</p>
-                    </div>
-                    
-                    <div class="text-center card-hover bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl">
-                        <div class="w-16 h-16 bg-transport-orange text-white rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Vision</h3>
-                        <p class="text-gray-600">To lead the bus transport industry through innovative service to the riding public.</p>
                     </div>
                 </div>
             </div>
@@ -317,28 +314,6 @@
                 header.classList.remove('shadow-2xl');
             }
         });
-
-        // Simulate user session (replace with actual PHP session handling)
-        function updateUserAccount() {
-            const userAccount = document.getElementById('userAccount');
-            // This would be replaced with actual PHP session data
-            const isLoggedIn = false; // This would come from PHP
-            const userEmail = ''; // This would come from PHP session
-            
-            if (isLoggedIn && userEmail) {
-                userAccount.innerHTML = `
-                    <div class="text-sm text-gray-600">Welcome, ${userEmail}!</div>
-                    <a href="logout.php" class="text-sm text-red-600 hover:text-red-800 transition-colors">Logout</a>
-                `;
-            } else {
-                userAccount.innerHTML = `
-                    <div class="text-sm text-gray-600">Welcome, Guest!</div>
-                    <a href="signlog.php" class="text-sm text-transport-blue hover:text-transport-orange transition-colors">Sign Up / Login</a>
-                `;
-            }
-        }
-
-        updateUserAccount();
     </script>
 </body>
 </html>

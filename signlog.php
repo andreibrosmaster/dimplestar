@@ -3,48 +3,50 @@
     
     $errors = array();
     
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if (preg_match("/\S+/", $_POST['fname']) === 0) {
-            $errors['fname'] = "* First Name is required.";
-        }
-        if (preg_match("/\S+/", $_POST['lname']) === 0) {
-            $errors['lname'] = "* Last Name is required.";
-        }
-        if (preg_match("/.+@.+\..+/", $_POST['email']) === 0) {
-            $errors['email'] = "* Not a valid e-mail address.";
-        }
-        if (preg_match("/.{8,}/", $_POST['password']) === 0) {
-            $errors['password'] = "* Password must contain at least 8 characters.";
-        }
-        if (strcmp($_POST['password'], $_POST['confirm_password'])) {
-            $errors['confirm_password'] = "* Passwords do not match.";
-        }
-        
-        if (count($errors) === 0) {
-            $fname = mysqli_real_escape_string($con, $_POST['fname']);
-            $lname = mysqli_real_escape_string($con, $_POST['lname']);
-            $email = mysqli_real_escape_string($con, $_POST['email']);
-            
-            $password = hash('sha256', $_POST['password']);
-            function createSalt() {
-                $string = md5(uniqid(rand(), true));
-                return substr($string, 0, 3);
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_type'])) {
+        if ($_POST['form_type'] === 'signup') {
+            if (preg_match("/\S+/", $_POST['fname']) === 0) {
+                $errors['fname'] = "* First Name is required.";
             }
-            $salt = createSalt();
-            $password = hash('sha256', $salt . $password);
+            if (preg_match("/\S+/", $_POST['lname']) === 0) {
+                $errors['lname'] = "* Last Name is required.";
+            }
+            if (preg_match("/.+@.+\..+/", $_POST['email']) === 0) {
+                $errors['email'] = "* Not a valid e-mail address.";
+            }
+            if (preg_match("/.{8,}/", $_POST['password']) === 0) {
+                $errors['password'] = "* Password must contain at least 8 characters.";
+            }
+            if (strcmp($_POST['password'], $_POST['confirm_password'])) {
+                $errors['confirm_password'] = "* Passwords do not match.";
+            }
             
-            $search_query = mysqli_query($con, "SELECT * FROM members WHERE email = '$email'");
-            $num_row = mysqli_num_rows($search_query);
-            if ($num_row >= 1) {
-                $errors['email'] = "Email address is unavailable.";
-            } else {
-                $sql = "INSERT INTO members(`fname`, `lname`, `email`, `salt`, `password`) VALUES ('$fname', '$lname', '$email', '$salt', '$password')";
-                $query = mysqli_query($con, $sql);
-                $_POST['fname'] = '';
-                $_POST['lname'] = '';
-                $_POST['email'] = '';
+            if (count($errors) === 0) {
+                $fname = mysqli_real_escape_string($con, $_POST['fname']);
+                $lname = mysqli_real_escape_string($con, $_POST['lname']);
+                $email = mysqli_real_escape_string($con, $_POST['email']);
                 
-                $successful = "<p class='text-green-600 font-semibold'>You are successfully registered.</p>";
+                $password = hash('sha256', $_POST['password']);
+                function createSalt() {
+                    $string = md5(uniqid(rand(), true));
+                    return substr($string, 0, 3);
+                }
+                $salt = createSalt();
+                $password = hash('sha256', $salt . $password);
+                
+                $search_query = mysqli_query($con, "SELECT * FROM members WHERE email = '$email'");
+                $num_row = mysqli_num_rows($search_query);
+                if ($num_row >= 1) {
+                    $errors['email'] = "Email address is unavailable.";
+                } else {
+                    $sql = "INSERT INTO members(`fname`, `lname`, `email`, `salt`, `password`) VALUES ('$fname', '$lname', '$email', '$salt', '$password')";
+                    $query = mysqli_query($con, $sql);
+                    $_POST['fname'] = '';
+                    $_POST['lname'] = '';
+                    $_POST['email'] = '';
+                    
+                    $successful = "<p class='text-green-600 font-semibold'>You are successfully registered.</p>";
+                }
             }
         }
     }
@@ -177,6 +179,27 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        /* Form toggle styles */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .carousel-item {
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .carousel-button {
+            transition: all 0.3s ease;
+        }
+
+        .carousel-button.active {
+            background: linear-gradient(to right, #1e40af, #f97316);
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
@@ -269,80 +292,87 @@
                     </p>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-12 animate-slideIn">
-                    <!-- Login Form -->
-                    <div class="bg-white p-8 rounded-xl shadow-xl card-hover">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h3>
-                        <form method="post" action="login.php" class="space-y-6">
-                            <?php if (isset($_GET['message'])): ?>
-                                <p class="text-red-600 font-semibold text-center"><?php echo htmlspecialchars($_GET['message']); ?></p>
-                            <?php endif; ?>
-                            <div>
-                                <label for="login_email" class="block text-sm font-medium text-gray-700">E-mail</label>
-                                <input type="email" name="login_email" id="login_email" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
-                            </div>
-                            <div>
-                                <label for="login_password" class="block text-sm font-medium text-gray-700">Password</label>
-                                <input type="password" name="login_password" id="login_password" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
-                            </div>
-                            <div>
-                                <button type="submit" name="submit" id="login" class="w-full bg-gradient-to-r from-transport-blue to-transport-orange text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
-                                    Login
-                                </button>
-                            </div>
-                        </form>
+                <div class="animate-slideIn">
+                    <div class="flex justify-center mb-6">
+                        <button id="loginBtn" class="carousel-button px-6 py-3 mx-2 rounded-lg font-semibold text-gray-700 bg-white hover:bg-gray-100 transition-all duration-300 active">Login</button>
+                        <button id="signupBtn" class="carousel-button px-6 py-3 mx-2 rounded-lg font-semibold text-gray-700 bg-white hover:bg-gray-100 transition-all duration-300">Sign Up</button>
                     </div>
-
-                    <!-- Sign Up Form -->
-                    <div class="bg-white p-8 rounded-xl shadow-xl card-hover">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Sign Up</h3>
-                        <form method="post" action="signlog.php" class="space-y-6">
-                            <?php if (isset($successful)): ?>
-                                <?php echo $successful; ?>
-                            <?php endif; ?>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="carousel-container bg-white p-8 rounded-xl shadow-xl card-hover">
+                        <!-- Login Form -->
+                        <div class="carousel-item" id="loginForm">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h3>
+                            <form method="post" action="login.php" class="space-y-6">
+                                <input type="hidden" name="form_type" value="login">
+                                <?php if (isset($_GET['message'])): ?>
+                                    <p class="text-red-600 font-semibold text-center"><?php echo htmlspecialchars($_GET['message']); ?></p>
+                                <?php endif; ?>
                                 <div>
-                                    <label for="fname" class="block text-sm font-medium text-gray-700">First Name</label>
-                                    <input type="text" name="fname" id="fname" placeholder="First Name" value="<?php if (isset($_POST['fname'])) echo htmlspecialchars($_POST['fname']); ?>" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
-                                    <?php if (isset($errors['fname'])): ?>
-                                        <p class="text-red-600 text-sm mt-1"><?php echo $errors['fname']; ?></p>
+                                    <label for="login_email" class="block text-sm font-medium text-gray-700">E-mail</label>
+                                    <input type="email" name="login_email" id="login_email" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
+                                </div>
+                                <div>
+                                    <label for="login_password" class="block text-sm font-medium text-gray-700">Password</label>
+                                    <input type="password" name="login_password" id="login_password" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
+                                </div>
+                                <div>
+                                    <button type="submit" name="submit" class="w-full bg-gradient-to-r from-transport-blue to-transport-orange text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                                        Login
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Sign Up Form -->
+                        <div class="carousel-item" id="signupForm" style="display: none;">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Sign Up</h3>
+                            <form method="post" action="signlog.php" class="space-y-6">
+                                <input type="hidden" name="form_type" value="signup">
+                                <?php if (isset($successful)): ?>
+                                    <?php echo $successful; ?>
+                                <?php endif; ?>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="fname" class="block text-sm font-medium text-gray-700">First Name</label>
+                                        <input type="text" name="fname" id="fname" placeholder="First Name" value="<?php if (isset($_POST['fname'])) echo htmlspecialchars($_POST['fname']); ?>" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
+                                        <?php if (isset($errors['fname'])): ?>
+                                            <p class="text-red-600 text-sm mt-1"><?php echo $errors['fname']; ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div>
+                                        <label for="lname" class="block text-sm font-medium text-gray-700">Last Name</label>
+                                        <input type="text" name="lname" id="lname" placeholder="Last Name" value="<?php if (isset($_POST['lname'])) echo htmlspecialchars($_POST['lname']); ?>" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
+                                        <?php if (isset($errors['lname'])): ?>
+                                            <p class="text-red-600 text-sm mt-1"><?php echo $errors['lname']; ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">E-mail Address</label>
+                                    <input type="email" name="email" id="email" placeholder="E-mail Address" value="<?php if (isset($_POST['email'])) echo htmlspecialchars($_POST['email']); ?>" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
+                                    <?php if (isset($errors['email'])): ?>
+                                        <p class="text-red-600 text-sm mt-1"><?php echo $errors['email']; ?></p>
                                     <?php endif; ?>
                                 </div>
                                 <div>
-                                    <label for="lname" class="block text-sm font-medium text-gray-700">Last Name</label>
-                                    <input type="text" name="lname" id="lname" placeholder="Last Name" value="<?php if (isset($_POST['lname'])) echo htmlspecialchars($_POST['lname']); ?>" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
-                                    <?php if (isset($errors['lname'])): ?>
-                                        <p class="text-red-600 text-sm mt-1"><?php echo $errors['lname']; ?></p>
+                                    <label for="pw" class="block text-sm font-medium text-gray-700">Password</label>
+                                    <input type="password" name="password" id="pw" placeholder="Password" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
+                                    <?php if (isset($errors['password'])): ?>
+                                        <p class="text-red-600 text-sm mt-1"><?php echo $errors['password']; ?></p>
                                     <?php endif; ?>
                                 </div>
-                            </div>
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700">E-mail Address</label>
-                                <input type="email" name="email" id="email" placeholder="E-mail Address" value="<?php if (isset($_POST['email'])) echo htmlspecialchars($_POST['email']); ?>" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
-                                <?php if (isset($errors['email'])): ?>
-                                    <p class="text-red-600 text-sm mt-1"><?php echo $errors['email']; ?></p>
-                                <?php endif; ?>
-                            </div>
-                            <div>
-                                <label for="pw" class="block text-sm font-medium text-gray-700">Password</label>
-                                <input type="password" name="password" id="pw" placeholder="Password" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
-                                <?php if (isset($errors['password'])): ?>
-                                    <p class="text-red-600 text-sm mt-1"><?php echo $errors['password']; ?></p>
-                                <?php endif; ?>
-                            </div>
-                            <div>
-                                <label for="cpw" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                                <input type="password" name="confirm_password" id="cpw" placeholder="Confirm Password" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
-                                <?php if (isset($errors['confirm_password'])): ?>
-                                    <p class="text-red-600 text-sm mt-1"><?php echo $errors['confirm_password']; ?></p>
-                                <?php endif; ?>
-                            </div>
-                            <div>
-                                <button type="submit" name="submit" id="submit" class="w-full bg-gradient-to-r from-transport-blue to-transport-orange text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
-                                    Sign Up
-                                </button>
-                            </div>
-                        </form>
+                                <div>
+                                    <label for="cpw" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                                    <input type="password" name="confirm_password" id="cpw" placeholder="Confirm Password" class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:ring-transport-blue focus:border-transport-blue" required />
+                                    <?php if (isset($errors['confirm_password'])): ?>
+                                        <p class="text-red-600 text-sm mt-1"><?php echo $errors['confirm_password']; ?></p>
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <button type="submit" name="submit" class="w-full bg-gradient-to-r from-transport-blue to-transport-orange text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                                        Sign Up
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -404,11 +434,33 @@
             }
         });
 
+        // Form toggle functionality
+        const loginBtn = document.getElementById('loginBtn');
+        const signupBtn = document.getElementById('signupBtn');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+
+        loginBtn.addEventListener('click', () => {
+            loginBtn.classList.add('active');
+            signupBtn.classList.remove('active');
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+        });
+
+        signupBtn.addEventListener('click', () => {
+            signupBtn.classList.add('active');
+            loginBtn.classList.remove('active');
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        });
+
+        // Initialize with login form visible
+        loginBtn.classList.add('active');
+
         // Simulate user session (replace with actual PHP session handling)
         function updateUserAccount() {
             const userAccount = document.getElementById('userAccount');
             <?php
-                session_start();
                 $isLoggedIn = isset($_SESSION['email']);
                 $userEmail = $isLoggedIn ? $_SESSION['email'] : '';
             ?>
